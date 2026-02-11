@@ -54,3 +54,7 @@ logs:
 # ------------------------------------------------------------
 clean:
 	$(COMPOSE) down -v --remove-orphans
+
+.PHONY: e2e
+e2e:
+	bash tests/e2e.sh
