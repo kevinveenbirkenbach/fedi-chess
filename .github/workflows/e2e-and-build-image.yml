@@ -1,13 +1,10 @@
 name: e2e-and-build-image
 
 on:
-  pull_request:
   push:
     branches:
       - main
       - master
-    tags:
-      - "v*"
   workflow_dispatch:
 
 permissions:
@@ -17,13 +14,19 @@ permissions:
 env:
   IMAGE_NAME: ghcr.io/${{ github.repository }}
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
   e2e:
     name: 🧪 E2E (compose up + HTTP 200)
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout (with full history + tags)
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Show Docker versions
         run: |
@@ -39,10 +42,28 @@ jobs:
     name: 🐳 Build & Push Image
     runs-on: ubuntu-latest
     needs: e2e
-    if: github.event_name != 'pull_request'
+
     steps:
-      - name: Checkout
+      - name: Checkout (with full history + tags)
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Detect version tag on this commit (v*)
+        id: version
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --force --tags
+
+          tag="$(git tag --points-at "${GITHUB_SHA}" --list 'v*' | sort -V | tail -n1 || true)"
+          if [[ -n "${tag}" ]]; then
+            echo "found=true" >> "$GITHUB_OUTPUT"
+            echo "tag=${tag}" >> "$GITHUB_OUTPUT"
+          else
+            echo "found=false" >> "$GITHUB_OUTPUT"
+            echo "tag=" >> "$GITHUB_OUTPUT"
+          fi
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
@@ -57,17 +78,13 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      # Creates tags like:
-      # - v1.2.3 (when pushing a git tag v1.2.3)
-      # - sha-<shortsha> (always on branch pushes)
-      # - latest (only on default branch)
       - name: Docker metadata (tags/labels)
         id: meta
         uses: docker/metadata-action@v5
         with:
           images: ${{ env.IMAGE_NAME }}
           tags: |
-            type=ref,event=tag
+            type=raw,value=${{ steps.version.outputs.tag }},enable=${{ steps.version.outputs.found }}
             type=sha,format=short,prefix=sha-
             type=raw,value=latest,enable={{is_default_branch}}
 
