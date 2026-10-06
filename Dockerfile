@@ -22,7 +22,8 @@ RUN npm ci
 
 RUN npm run build
 
-RUN npm update --omit=dev
+RUN npm prune --omit=dev \
+ && npm audit fix --omit=dev --audit-level=none
 
 # ============================================================
 # Stage 2: Runtime

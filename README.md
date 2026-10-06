@@ -22,8 +22,8 @@ This repository does **not** reimplement the application.
 It provides:
 
 - A reproducible Docker image
-- npm builds from the upstream lockfile, with production dependencies updated
-  within their version ranges
+- npm builds from the upstream lockfile, with known vulnerabilities in
+  production dependencies patched
 - Production-ready runtime configuration
 - PostgreSQL integration
 - Compatibility with Infinito.Nexus orchestration
