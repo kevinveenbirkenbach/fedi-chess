@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.2.0] - 2026-10-06
+
+* Moved the base image from Node 24 to Node 26 and pinned it by digest.
+* The image is now built with npm from the upstream package-lock.json instead
+  of Yarn. Node 25 and later no longer ship Corepack, which broke the build.
+* The runtime image no longer contains npm, npx, Corepack or Yarn. The
+  entrypoint starts the migration and the server directly with Node.
+* The Compose file now uses Postgres 18 and mounts its volume at
+  /var/lib/postgresql. A local volume created with Postgres 16 is not migrated.
+* Updated the GitHub Actions used by the workflows and aligned all parts of the
+  CodeQL action on one version.
+* Dependabot now updates the parts of the CodeQL action together.
+
 ## [1.1.0] - 2026-10-06
 
 * Moved the base image from Node 20 on Debian bullseye to Node 24 on Debian
