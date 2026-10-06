@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.2.2] - 2026-10-06
+
+* The build now patches only production dependencies with a known
+  vulnerability instead of updating all of them.
+
 ## [1.2.1] - 2026-10-06
 
 * The runtime image now ships production dependencies updated within their
