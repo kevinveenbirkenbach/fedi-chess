@@ -5,7 +5,7 @@
 # ============================================================
 # Stage 1: Build
 # ============================================================
-FROM node:24-trixie AS build
+FROM node:25-trixie AS build
 
 # Defaults are important for CI builds (GitHub Actions)
 ARG CHESS_REPO_URL="https://github.com/stephank/castling.club.git"
@@ -36,7 +36,7 @@ RUN corepack yarn build
 # ============================================================
 # Stage 2: Runtime
 # ============================================================
-FROM node:24-trixie
+FROM node:25-trixie
 
 ARG CHESS_APP_DATA_DIR=/app/data
 ARG CONTAINER_PORT=5080
