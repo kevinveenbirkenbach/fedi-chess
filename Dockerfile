@@ -5,7 +5,7 @@
 # ============================================================
 # Stage 1: Build
 # ============================================================
-FROM node:25-trixie AS build
+FROM node:26-trixie@sha256:39cff0f037088f0d8faf3e5a3ca055d653a15b66faaba8af3daf72f0102f375f AS build
 
 # Defaults are important for CI builds (GitHub Actions)
 ARG CHESS_REPO_URL="https://github.com/stephank/castling.club.git"
@@ -18,25 +18,14 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 WORKDIR /src
 RUN git clone --depth 1 --branch "${CHESS_REPO_REF}" "${CHESS_REPO_URL}" ./
 
-RUN corepack enable \
- && corepack prepare yarn@4.9.1 --activate
+RUN npm ci
 
-ENV YARN_NODE_LINKER=node-modules
-
-RUN if [ -f yarn.lock ]; then \
-      echo "[chess] yarn.lock found -> immutable install"; \
-      corepack yarn install --immutable --inline-builds; \
-    else \
-      echo "[chess] yarn.lock missing -> normal install"; \
-      corepack yarn install --inline-builds; \
-    fi
-
-RUN corepack yarn build
+RUN npm run build
 
 # ============================================================
 # Stage 2: Runtime
 # ============================================================
-FROM node:25-trixie
+FROM node:26-trixie@sha256:39cff0f037088f0d8faf3e5a3ca055d653a15b66faaba8af3daf72f0102f375f
 
 ARG CHESS_APP_DATA_DIR=/app/data
 ARG CONTAINER_PORT=5080
@@ -47,13 +36,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     bash dumb-init postgresql-client ca-certificates curl \
  && rm -rf /var/lib/apt/lists/*
 
-# Remove Yarn 1 binaries to avoid accidental usage
-RUN rm -f /usr/local/bin/yarn /usr/local/bin/yarnpkg /usr/bin/yarn /usr/bin/yarnpkg || true
-
-RUN corepack enable \
- && corepack prepare yarn@4.9.1 --activate
-
-ENV YARN_NODE_LINKER=node-modules
+RUN rm -rf /usr/local/lib/node_modules/npm /usr/local/lib/node_modules/corepack \
+    /usr/local/bin/npm /usr/local/bin/npx /usr/local/bin/corepack \
+    /usr/local/bin/yarn /usr/local/bin/yarnpkg /opt/yarn-v*
 
 COPY --from=build /src /app
 COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh

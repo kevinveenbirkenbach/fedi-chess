@@ -6,14 +6,6 @@ set -euo pipefail
 APP_KEY_PUB="${APP_KEY_FILE}.pub"
 
 # ------------------------------------------------------------
-# Ensure Corepack/Yarn 4 is used (never Yarn 1)
-# ------------------------------------------------------------
-if ! command -v corepack >/dev/null 2>&1; then
-  echo "[chess] ERROR: corepack not found in container"
-  exit 1
-fi
-
-# ------------------------------------------------------------
 # 1) Generate signing key pair if missing
 # ------------------------------------------------------------
 if [[ ! -f "${APP_KEY_FILE}" || ! -f "${APP_KEY_PUB}" ]]; then
@@ -38,10 +30,10 @@ fi
 # 3) Run migrations (idempotent)
 # ------------------------------------------------------------
 echo "[chess] running migrations"
-corepack yarn migrate up
+node tools/migrate.js up
 
 # ------------------------------------------------------------
 # 4) Start application
 # ------------------------------------------------------------
 echo "[chess] starting server on port ${PORT}"
-exec corepack yarn start
+exec node tools/server.js

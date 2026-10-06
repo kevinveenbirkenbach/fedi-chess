@@ -22,7 +22,7 @@ This repository does **not** reimplement the application.
 It provides:
 
 - A reproducible Docker image
-- Deterministic Yarn 4 builds
+- Deterministic npm builds from the upstream lockfile
 - Production-ready runtime configuration
 - PostgreSQL integration
 - Compatibility with Infinito.Nexus orchestration
