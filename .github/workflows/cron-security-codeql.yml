@@ -1,0 +1,47 @@
+name: "🔐 Scan with CodeQL"
+run-name: "${{ github.event_name == 'schedule' && '⏰ ' || '' }}🔐 Scan with CodeQL"
+
+concurrency:
+  group: codeql-${{ github.repository }}-${{ github.ref }}
+  cancel-in-progress: true
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  pull_request:
+  schedule:
+    - cron: '0 0 * * 6'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  analyze:
+    name: 🔐 Security
+    runs-on: ubuntu-latest
+    permissions:
+      security-events: write
+      contents: read
+
+    steps:
+      - name: ⬇️ Checkout repository
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262  # v4.4.0
+        with:
+          persist-credentials: false
+
+      - name: 🎬 Initialize CodeQL
+        uses: github/codeql-action/init@3ea06614dafe36dec890db3446326e0d40ce53d4  # v3.38.1
+        with:
+          languages: actions
+          build-mode: none
+          queries: security-extended,security-and-quality
+
+      - name: ▶️ Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@3ea06614dafe36dec890db3446326e0d40ce53d4  # v3.38.1
+        with:
+          category: "/language:actions"
+        env:
+          CODEQL_ACTION_FILE_COVERAGE_ON_PRS: "true"
