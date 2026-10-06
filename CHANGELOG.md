@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.2.1] - 2026-10-06
+
+* The runtime image now ships production dependencies updated within their
+  version ranges and no longer contains development dependencies. This
+  resolves the known vulnerabilities in undici, qs, js-yaml and brace-expansion.
+
 ## [1.2.0] - 2026-10-06
 
 * Moved the base image from Node 24 to Node 26 and pinned it by digest.
