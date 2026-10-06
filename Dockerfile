@@ -2,13 +2,10 @@
 # fedi-chess - Multi-stage build for castling.club
 # ------------------------------------------------------------
 
-ARG CHESS_VERSION=20-bullseye
-ARG CHESS_IMAGE=node
-
 # ============================================================
 # Stage 1: Build
 # ============================================================
-FROM ${CHESS_IMAGE}:${CHESS_VERSION} AS build
+FROM node:24-trixie AS build
 
 # Defaults are important for CI builds (GitHub Actions)
 ARG CHESS_REPO_URL="https://github.com/stephank/castling.club.git"
@@ -39,7 +36,7 @@ RUN corepack yarn build
 # ============================================================
 # Stage 2: Runtime
 # ============================================================
-FROM ${CHESS_IMAGE}:${CHESS_VERSION}
+FROM node:24-trixie
 
 ARG CHESS_APP_DATA_DIR=/app/data
 ARG CONTAINER_PORT=5080

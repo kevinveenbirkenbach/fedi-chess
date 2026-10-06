@@ -7,10 +7,6 @@ services:
         CHESS_REPO_URL: "https://github.com/stephank/castling.club.git"
         CHESS_REPO_REF: "main"
 
-        # Base image
-        CHESS_IMAGE: "node"
-        CHESS_VERSION: "20-bullseye"
-
         # Runtime wiring inside the image
         CHESS_ENTRYPOINT_REL: "docker-entrypoint.sh"
         CHESS_ENTRYPOINT_INT: "/usr/local/bin/docker-entrypoint.sh"
