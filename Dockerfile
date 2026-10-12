@@ -5,7 +5,7 @@
 # ============================================================
 # Stage 1: Build
 # ============================================================
-FROM node:26-trixie@sha256:39cff0f037088f0d8faf3e5a3ca055d653a15b66faaba8af3daf72f0102f375f AS build
+FROM node:26-trixie@sha256:32fa97f3363975684b08bf4e8a68a47c7905175cc20275b50b974bbd02aba731 AS build
 
 # Defaults are important for CI builds (GitHub Actions)
 ARG CHESS_REPO_URL="https://github.com/stephank/castling.club.git"
@@ -28,7 +28,7 @@ RUN npm prune --omit=dev \
 # ============================================================
 # Stage 2: Runtime
 # ============================================================
-FROM node:26-trixie@sha256:39cff0f037088f0d8faf3e5a3ca055d653a15b66faaba8af3daf72f0102f375f
+FROM node:26-trixie@sha256:32fa97f3363975684b08bf4e8a68a47c7905175cc20275b50b974bbd02aba731
 
 ARG CHESS_APP_DATA_DIR=/app/data
 ARG CONTAINER_PORT=5080
